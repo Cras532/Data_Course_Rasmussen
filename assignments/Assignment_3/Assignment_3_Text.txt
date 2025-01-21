@@ -1,0 +1,77 @@
+
+# YOUR REMAINING HOMEWORK ASSIGNMENT (Fill in with code) ####
+
+# 1.  Get a subset of the "iris" data frame where it's just even-numbered rows
+
+seq(2,150,2) # here's the code to get a list of the even numbers between 2 and 150
+# [1]   2   4   6   8  10  12  14  16
+[9]  18  20  22  24  26  28  30  32
+[17]  34  36  38  40  42  44  46  48
+[25]  50  52  54  56  58  60  62  64
+[33]  66  68  70  72  74  76  78  80
+[41]  82  84  86  88  90  92  94  96
+[49]  98 100 102 104 106 108 110 112
+[57] 114 116 118 120 122 124 126 128
+[65] 130 132 134 136 138 140 142 144
+[73] 146 148 150
+
+even_rows <- seq(2, 150, 2)
+
+#subset the iris data fram
+iris_even_rows <- iris[even_rows,]
+
+
+# 2.  Create a new object called iris_chr which is a copy of iris, except where every column is a character class
+
+iris_chr <- as.data.frame(lapply(iris, as.character))
+
+
+# 3.  Create a new numeric vector object named "Sepal.Area" which is the product of Sepal.Length and Sepal.Width
+
+Sepal.Area <- iris$Sepal.Length * iris$Sepal.Width
+#print(Sepal.Area)
+#[1] 17.85 14.70 15.04 14.26 18.00
+#[6] 21.06 15.64 17.00 12.76 15.19
+#[11] 19.98 16.32 14.40 12.90 23.20
+#[16] 25.08 21.06 17.85 21.66 19.38
+#[21] 18.36 18.87 16.56 16.83 16.32
+#[26] 15.00 17.00 18.20 17.68 15.04
+#[31] 14.88 18.36 21.32 23.10 15.19
+#[36] 16.00 19.25 17.64 13.20 17.34
+#[41] 17.50 10.35 14.08 17.50 19.38
+#[46] 14.40 19.38 14.72 19.61 16.50
+#[51] 22.40 20.48 21.39 12.65 18.20
+#[56] 15.96 20.79 11.76 19.14 14.04
+#[61] 10.00 17.70 13.20 17.69 16.24
+#[66] 20.77 16.80 15.66 13.64 14.00
+#[71] 18.88 17.08 15.75 17.08 18.56
+#[76] 19.80 19.04 20.10 17.40 14.82
+#[81] 13.20 13.20 15.66 16.20 16.20
+#[86] 20.40 20.77 14.49 16.80 13.75
+#[91] 14.30 18.30 15.08 11.50 15.12
+#[96] 17.10 16.53 17.98 12.75 15.96
+#[101] 20.79 15.66 21.30 18.27 19.50
+#[106] 22.80 12.25 21.17 16.75 25.92
+#[111] 20.80 17.28 20.40 14.25 16.24
+#[116] 20.48 19.50 29.26 20.02 13.20
+#[121] 22.08 15.68 21.56 17.01 22.11
+#[126] 23.04 17.36 18.30 17.92 21.60
+#[131] 20.72 30.02 17.92 17.64 15.86
+#[136] 23.10 21.42 19.84 18.00 21.39
+#[141] 20.77 21.39 15.66 21.76 22.11
+#[146] 20.10 15.75 19.50 21.08 17.70
+
+# 4.  Add Sepal.Area to the iris data frame as a new column
+
+iris$Sepal.Area <- Sepal.Area
+
+
+# 5.  Create a new dataframe that is a subset of iris using only rows where Sepal.Area is greater than 20 
+      # (name it big_area_iris)
+
+big_area_iris <- subset(iris, Sepal.Area > 20)
+
+
+# 6.  Upload the last numbered section of this R script (with all answers filled in and tasks completed) 
+      # to canvas
+      # I should be able to run your R script and get all the right objects generated
