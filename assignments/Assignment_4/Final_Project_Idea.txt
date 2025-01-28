@@ -1,0 +1,13 @@
+I want to preform analysis on biology degrees. I want to find out the average pay across the U.S. for a Bachelors in Biology. 
+From there, I would want to see how many bachelors continue to grad school and what they get paid for a Masters or Doctorates.
+I can compare the cost of schooling with salaries and determine if the cost benefit is worth it. I will include matriculation
+to medical schools as a variable.
+
+I hope to see that as you increase your schooling (ie; bachelors to masters or doctorates) you will see a climb in salary.
+
+Sources may include:
+https://www.bls.gov/ooh/field-of-degree/biology/biology-field-of-degree.htm
+
+https://datausa.io/profile/cip/biology
+
+https://www.statista.com/statistics/238451/median-income-of-biology-and-life-science-majors-by-study-focus-in-the-us/
