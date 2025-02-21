@@ -20,7 +20,7 @@ print(ugly_plot)
 
 install.packages("ggimage")
 library(ggimage)
-data$image <- "G:/Spring 2025/Data Analysis/Ugly.png"
+data$image <- "Data_Course_Rasmussen/assignments/Assignment_5/Ugly.png"
 
 ugly_plot <- ggplot(data, aes(x = mpg, y = hp, image = image)) +
   geom_image(size = 0.1) + # Adjust size as needed
@@ -43,7 +43,7 @@ library(grid)
 install.packages("png")
 library(png)
 
-background_image <- rasterGrob(readPNG("G:/Spring 2025/Data Analysis/Background.png"), 
+background_image <- rasterGrob(readPNG("Data_Course_Rasmussen\assignments\Assignment_5\Background.png"), 
                                width = unit(1, "npc"), height = unit(1, "npc"))
 
 ugly_plot <- ggplot(data, aes(x = mpg, y = hp, image = image)) +
