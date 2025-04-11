@@ -1,6 +1,6 @@
 
 # 1) Read in the unicef data (10 pts) 2. Get it into tidy format (10 pts) 3. Plot each country’s U5MR over time (20 points)
-data <- read.csv("Data_Course_Rasmussen/BIOL3100_Exams/Exam_2/unicef-u5mr.csv")
+data <- read.csv("unicef-u5mr.csv")
 
 install.packages("skimr")
 library(skimr)
