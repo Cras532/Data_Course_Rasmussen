@@ -167,7 +167,3 @@ ggplot(combined_data, aes(x = Light, y = GrowthRate)) +
        x = "Light",
        y = "Growth Rate") +
   theme_minimal()
-
-
-
-
