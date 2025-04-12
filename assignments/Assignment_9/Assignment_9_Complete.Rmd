@@ -1,0 +1,256 @@
+---
+title: "Assignment_9 GradSchool Admissions"
+author: "Chase Rasmussen"
+date: "2025-04-12"
+output:
+  html_document:
+    df_print: paged
+    theme: cosmo
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+
+```
+
+## Introduction
+
+This is my report which analyzes grad school admissions data. I have included various models and predictions. I explore the relationships between GRE, GPA, and rank with admissions, and compare different models of it. 
+
+
+## Loading Libraries and Data - Start Here!
+
+Load required libraries  
+library(tidyverse)  
+library(dplyr)  
+library(ggplot2)  
+library(tidyr)  
+library(performance)  
+library(plotly)  
+library(reshape2)  
+library(magrittr)  
+library(vegan)  
+
+
+Data set  
+data <- read.csv("GradSchool_Admissions.csv")
+
+
+Display column names and summary  
+colnames(data)    
+summary(data)  
+
+<details>
+<summary>Click to expand Code for Libraries, Data Set</summary>
+```{r Libraries, Data Set}
+# Load required libraries
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(performance)
+library(plotly)
+library(reshape2)
+library(magrittr)
+library(vegan)
+
+# Data set
+data <- read.csv("GradSchool_Admissions.csv")
+
+
+# Display column names and summary
+colnames(data)  
+summary(data)
+
+```
+
+## Exploring the Data
+### Relationships between GRE, GPA, and Rank  
+Testing the drop down option here.
+<details>
+<summary>Click to expand Code for Relationships</summary>
+
+```{r gre-model, echo=TRUE, eval=TRUE}
+
+# Build basic models
+model_gre_admit <- glm(admit ~ gre, data = data, family = binomial)
+summary(model_gre_admit)
+
+model_gpa_admit <- glm(admit ~ gpa, data = data, family = binomial)
+summary(model_gpa_admit)
+
+model_rank_admit <- glm(admit ~ rank, data = data, family = binomial)
+summary(model_rank_admit)
+```
+
+
+
+## Plotting GRE vs GPA and Correlation Test  
+Just want to see the plot here.. 
+
+```{r}
+# Scatter plot of GRE vs GPA
+plot(data$gre, data$gpa)
+cor(data$gre, data$gpa)
+cor.test(data$gre, data$gpa)
+```
+
+## Predicted Admission Probabilites
+```{r}
+# Data frame for plotting predicted probabilities
+plot_data <- data.frame(
+  gre = data$gre,
+  gpa = data$gpa,
+  rank = data$rank,
+  admit = data$admit,
+  pred_gre = predict(model_gre_admit, type = "response"),
+  pred_gpa = predict(model_gpa_admit, type = "response"),
+  pred_rank = predict(model_rank_admit, type = "response"))
+
+# Plotting predicted probabilities for GRE, GPA, and Rank
+ggplot(plot_data, aes(x = gre, y = pred_gre)) +
+  geom_line(color = "blue") +
+  geom_point(aes(y = admit), alpha = 0.3) +
+  labs(title = "Admission Probability vs GRE Score", x = "GRE Score", y = "Admission Probability") +
+  theme_minimal()
+```
+
+
+That didn't turn out how I wanted, didn't give me a lot of information. I decided to tweak it a bit and run it by comparing models.
+
+## Comparing Models
+
+```{r}
+# Models with varying complexities
+model_gre_gpa_admit <- glm(admit ~ gre + gpa, data = data, family = binomial)
+model_full_admit <- glm(admit ~ gre + gpa + rank, data = data, family = binomial)
+
+# Compare model performance
+comp <- compare_performance(model_gre_gpa_admit, model_full_admit) %>%
+  plot()
+print(comp)
+```
+
+
+I liked this more, but I wanted a 3D image, and I ended up needing help on this part. 
+
+
+
+```{r}
+gre_vals <- seq(min(data$gre), max(data$gre), length.out = 100)
+gpa_vals <- seq(min(data$gpa), max(data$gpa), length.out = 100)
+rank_levels <- unique(data$rank)
+
+prediction_grid <- expand.grid(gre = gre_vals,
+                               gpa = gpa_vals,
+                               rank = rank_levels)
+
+prediction_grid$predicted_prob <- predict(model_full_admit, newdata = prediction_grid, type = "response")
+
+# 3D Plot using plotly
+prediction_grid_rank1 <- prediction_grid[prediction_grid$rank == 1, ]
+
+z_matrix <- acast(prediction_grid_rank1, gpa ~ gre, value.var = "predicted_prob")
+
+plotly::plot_ly(
+  x = gre_vals,
+  y = gpa_vals,
+  z = z_matrix
+) %>%
+  plotly::add_surface(colorscale = "Blues") %>%
+  plotly::layout(
+    title = list(text = "Predicted Admission Probability (GRE * GPA Interaction, Rank 1)"),
+    scene = list(
+      xaxis = list(title = "GRE"),
+      yaxis = list(title = "GPA"),
+      zaxis = list(title = "Admission Probability")
+    )
+  )
+```
+
+
+## Click the image and move it around!!  
+Although its pretty cool, I still am just playing with predictions.  
+Now I wanted to test the model performance!
+
+## Model performance on Test Data
+```{r}
+# Train/test split
+set.seed(123)
+train_indices <- sample(1:nrow(data), size = 0.7 * nrow(data))
+train_data <- data[train_indices, ]
+test_data <- data[-train_indices, ]
+
+# Fit the interaction model
+model_interact <- glm(admit ~ gre * gpa + rank, data = train_data, family = binomial)
+
+# Predictions and accuracy
+test_data$predicted_prob <- predict(model_interact, newdata = test_data, type = "response")
+test_data$predicted_class <- ifelse(test_data$predicted_prob >= 0.5, 1, 0)
+
+# Confusion matrix and accuracy
+table(Predicted = test_data$predicted_class, Actual = test_data$admit)
+mean(test_data$predicted_class == test_data$admit)
+```
+
+Now to train the data and test the predictions against the actual data!
+
+## Training
+```{r train_test_split, echo=TRUE}
+# Train/test split
+set.seed(123)
+train_indices <- sample(1:nrow(data), size = 0.7 * nrow(data))
+train_data <- data[train_indices, ]
+test_data <- data[-train_indices, ]
+# interaction model
+model_interact <- glm(admit ~ gre * gpa + rank, data = train_data, family = binomial)
+# add probabilites and make them binary
+test_data$predicted_prob <- predict(model_interact, newdata = test_data, type = "response")
+# convert to lables and a threshold
+test_data$predicted_class <- ifelse(test_data$predicted_prob >= 0.5, 1, 0)
+# confusion matrix
+table(Predicted = test_data$predicted_class, Actual = test_data$admit)
+# finally accuracy
+mean(test_data$predicted_class == test_data$admit)
+```
+# In the End:
+
+I was able to explore the data. Explored correlations between variables - GRE and GPA were found to have a weak correlation. We created Logistic Regression models based on admissions. We then built up more complex models and compared their performance - The interaction model performed the best. Then we had a lot of visualization option to show these performances. Then, I split the data to check for validation. I split it and then trained the interaction model and ran that against the real data. 
+
+Finally: My final model correctly predicted admission decisions at ~71.7% which in a regression model, this is a great result. 
+
+However: That also means there is ~28.3% unexplained. This could be due to noise in the data set, unmeasured factors, or inherent unpredictability.
+
+Thanks!
+
+
+## Bonus - Dimensionality Reduction - non-metric multidimensional scaling (NMDS)
+
+```{r}
+# Select only numeric predictors (you can scale them if needed)
+data_numeric <- data %>%
+  select(gre, gpa, rank)
+
+# NMDS using Bray-Curtis dissimilarity (common for mixed data)
+nmds_result <- metaMDS(data_numeric, distance = "euclidean", k = 2, trymax = 100)
+
+# Check stress (how good the fit is)
+nmds_result$stress
+
+# Extract NMDS scores (coordinates in 2D space)
+nmds_points <- as.data.frame(nmds_result$points)
+nmds_points$admit <- as.factor(data$admit)
+
+# Plot using ggplot
+
+ggplot(nmds_points, aes(x = MDS1, y = MDS2, color = admit)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(title = "NMDS of Grad School Admissions",
+       x = "NMDS Dimension 1", y = "NMDS Dimension 2",
+       color = "Admission Status") +
+  theme_minimal()
+```
+
+
+Similar scores cluster together - that would be good. 2 separate groups - admitted and non-admitted, that also would be great. I did not have the latter. I do think it shows 2 clusters, or at least the start of some clustering. 
+
